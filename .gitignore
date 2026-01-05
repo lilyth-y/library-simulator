@@ -1,0 +1,15 @@
+# Unreal Engine 5 gitignore
+Binaries/
+Intermediate/
+Saved/
+DerivedDataCache/
+Build/
+.vs/
+*.sln
+*.vc.db
+*.opendb
+*.suo
+.idea/
+.vscode/
+*.xcodeproj
+*.xcworkspace
