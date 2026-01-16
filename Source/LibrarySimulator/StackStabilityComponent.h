@@ -25,15 +25,20 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stability")
     float StabilityThreshold;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stability")
+    float CollapseCooldownSeconds;
+
     UPROPERTY(BlueprintAssignable, Category = "Stability")
     FOnStackCollapse OnStackCollapse;
 
 private:
     void CheckStability();
-    float CalculateStackCenterOfMass(FVector& OutCoM);
+    float CalculateStackCenterOfMass(const TArray<AActor*>& Stack, FVector& OutCoM);
     
     // Returns true if the stack is stable (CoM is within support radius)
     bool IsStackStable();
     
     TArray<AActor*> GetStackedBooks();
+
+    float LastCollapseTimeSeconds;
 };

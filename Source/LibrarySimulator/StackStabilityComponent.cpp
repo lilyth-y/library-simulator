@@ -7,6 +7,8 @@ UStackStabilityComponent::UStackStabilityComponent()
     PrimaryComponentTick.bCanEverTick = true;
     HeightThreshold = 100.0f; 
     StabilityThreshold = 10.0f; // CM deviation allowed
+    CollapseCooldownSeconds = 1.0f;
+    LastCollapseTimeSeconds = -100000.0f;
 }
 
 void UStackStabilityComponent::BeginPlay()
@@ -24,6 +26,13 @@ void UStackStabilityComponent::CheckStability()
 {
     if (!IsStackStable())
     {
+        const float CurrentTimeSeconds = GetWorld() ? GetWorld()->GetTimeSeconds() : 0.0f;
+        if (CurrentTimeSeconds - LastCollapseTimeSeconds < CollapseCooldownSeconds)
+        {
+            return;
+        }
+        LastCollapseTimeSeconds = CurrentTimeSeconds;
+
         OnStackCollapse.Broadcast();
         
         // Add physics impulse to simulate collapse
@@ -39,9 +48,8 @@ void UStackStabilityComponent::CheckStability()
     }
 }
 
-float UStackStabilityComponent::CalculateStackCenterOfMass(FVector& OutCoM)
+float UStackStabilityComponent::CalculateStackCenterOfMass(const TArray<AActor*>& Stack, FVector& OutCoM)
 {
-    TArray<AActor*> Stack = GetStackedBooks();
     if (Stack.Num() == 0) return 0.0f;
 
     FVector TotalWeightedLoc = FVector::ZeroVector;
@@ -66,10 +74,16 @@ float UStackStabilityComponent::CalculateStackCenterOfMass(FVector& OutCoM)
 
 bool UStackStabilityComponent::IsStackStable()
 {
-    FVector CoM;
-    float TotalWeight = CalculateStackCenterOfMass(CoM);
+    TArray<AActor*> Stack = GetStackedBooks();
+    if (Stack.Num() == 0) return true; // Empty stack is stable
+    if (HeightThreshold > 0.0f && Stack.Num() > HeightThreshold)
+    {
+        return false;
+    }
 
-    if (TotalWeight == 0.0f) return true; // Empty stack is stable
+    FVector CoM;
+    float TotalWeight = CalculateStackCenterOfMass(Stack, CoM);
+    if (TotalWeight == 0.0f) return true;
 
     // Project CoM found to XY plane relative to Base
     FVector BaseLoc = GetOwner()->GetActorLocation();

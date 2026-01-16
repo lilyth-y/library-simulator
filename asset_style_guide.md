@@ -66,6 +66,19 @@ Animations:
 - Create simple collision for books and shelves.
 - Assign a consistent material set (warm wood, muted fabric).
 
+## Naming and Folder Conventions
+- Prefixes: SM_ (static mesh), SK_ (skeletal mesh), M_ (material), MI_ (material instance), T_ (texture), SFX_ (sound).
+- Characters: Content/LibrarySimulator/Characters
+- Props: Content/LibrarySimulator/Props
+- Environment: Content/LibrarySimulator/Environment
+- Animations: Content/LibrarySimulator/Animations
+- UI: Content/LibrarySimulator/UI
+
+## LOD and Collision Guidelines
+- LOD0 for hero props, LOD1+ for background shelves.
+- Use simple box/sphere collision for books and shelves.
+- Avoid complex collision on stacked book meshes to keep physics stable.
+
 ## Blueprint Hook Targets
 - Mission UI: bind to Task Manager events.
 - Shelf placement: play feedback FX/SFX on correct/incorrect placement.

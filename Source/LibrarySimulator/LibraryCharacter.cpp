@@ -4,6 +4,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "LibraryBook.h"
+#include "BookInterface.h"
 #include "LibraryPatron.h"
 #include "PatronAIController.h"
 
@@ -72,6 +73,7 @@ void ALibraryCharacter::PickupBook(ALibraryBook* Book)
     if (!Book || !PhysicsHandle) return;
 
     CarriedBook = Book;
+    CarriedBook->BookData.bIsBeingRelocated = true;
 
     // Best Practice: Soft handling for smooth carrying
     PhysicsHandle->LinearDamping = 200.0f;
@@ -134,10 +136,22 @@ void ALibraryCharacter::TraceForInteractable()
 
     if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params))
     {
-        ALibraryBook* Book = Cast<ALibraryBook>(HitResult.GetActor());
+        AActor* HitActor = HitResult.GetActor();
+        if (!HitActor)
+        {
+            return;
+        }
+
+        ALibraryBook* Book = Cast<ALibraryBook>(HitActor);
         if (Book)
         {
             PickupBook(Book);
+            return;
+        }
+
+        if (HitActor->GetClass()->ImplementsInterface(UBookInterface::StaticClass()))
+        {
+            IBookInterface::Execute_Pickup(HitActor);
         }
     }
 }

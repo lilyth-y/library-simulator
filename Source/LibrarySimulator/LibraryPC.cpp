@@ -7,13 +7,29 @@ ALibraryPC::ALibraryPC()
 
 bool ALibraryPC::SearchBook(FString Title, FBookData& OutData)
 {
+    const FString Query = Title.TrimStartAndEnd();
+    if (Query.IsEmpty())
+    {
+        return false;
+    }
+
     for (const FBookData& Book : LibraryDatabase)
     {
-        if (Book.Title.Equals(Title, ESearchCase::IgnoreCase))
+        if (Book.Title.Equals(Query, ESearchCase::IgnoreCase))
         {
             OutData = Book;
             UpdateDisplay(OutData);
             return true; 
+        }
+    }
+
+    for (const FBookData& Book : LibraryDatabase)
+    {
+        if (Book.Title.Contains(Query, ESearchCase::IgnoreCase))
+        {
+            OutData = Book;
+            UpdateDisplay(OutData);
+            return true;
         }
     }
     return false;
@@ -21,9 +37,8 @@ bool ALibraryPC::SearchBook(FString Title, FBookData& OutData)
 
 bool ALibraryPC::ValidateBarcodeInput(int32 InputCode, const FBookData& TargetBook)
 {
-    const int32 ExpectedCode = FMath::RoundToInt(TargetBook.CategoryID * 10.0f);
-    const bool bHasExpectedCode = ExpectedCode > 0;
-    const bool bSuccess = bHasExpectedCode ? (InputCode == ExpectedCode) : (InputCode > 0);
+    const bool bHasBarcode = TargetBook.Barcode > 0;
+    const bool bSuccess = bHasBarcode ? (InputCode == TargetBook.Barcode) : (InputCode > 0);
     
     if (bSuccess)
     {

@@ -11,12 +11,22 @@ ALibraryTaskManager::ALibraryTaskManager()
     PrimaryActorTick.bCanEverTick = false; // Uses TimerManager, no Tick needed
     MaxReturnQueueSize = 10;
     CurrentReturnQueueSize = 0;
+    MissionIntervalSeconds = 60.0f;
+    bMissionActive = false;
+    CurrentMissionTimeRemaining = 0.0f;
 }
 
 void ALibraryTaskManager::BeginPlay()
 {
     Super::BeginPlay();
-    GetWorld()->GetTimerManager().SetTimer(MissionSpawnTimer, this, &ALibraryTaskManager::SpawnRandomMission, 60.0f, true);
+    if (MissionIntervalSeconds > 0.0f)
+    {
+        GetWorld()->GetTimerManager().SetTimer(MissionSpawnTimer, this, &ALibraryTaskManager::SpawnRandomMission, MissionIntervalSeconds, true);
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("MissionIntervalSeconds must be > 0 to auto-spawn missions."));
+    }
 }
 
 void ALibraryTaskManager::AddBookToQueue()
@@ -45,6 +55,30 @@ void ALibraryTaskManager::RemoveBookFromQueue()
     }
 
     CurrentReturnQueueSize--;
+}
+
+void ALibraryTaskManager::CompleteCurrentMission()
+{
+    if (!bMissionActive)
+    {
+        return;
+    }
+
+    ClearMissionTimer();
+    bMissionActive = false;
+    OnMissionCompleted(CurrentMission);
+}
+
+void ALibraryTaskManager::FailCurrentMission()
+{
+    if (!bMissionActive)
+    {
+        return;
+    }
+
+    ClearMissionTimer();
+    bMissionActive = false;
+    OnMissionFailed(CurrentMission);
 }
 
 void ALibraryTaskManager::TriggerGameOver()
@@ -92,6 +126,11 @@ void ALibraryTaskManager::TriggerGameOver()
 
 void ALibraryTaskManager::SpawnRandomMission()
 {
+    if (bMissionActive)
+    {
+        return;
+    }
+
     if (MissionPool.Num() == 0)
     {
         UE_LOG(LogTemp, Warning, TEXT("MissionPool is empty. No mission spawned."));
@@ -101,6 +140,53 @@ void ALibraryTaskManager::SpawnRandomMission()
     const int32 MissionIndex = FMath::RandRange(0, MissionPool.Num() - 1);
     CurrentMission = MissionPool[MissionIndex];
     OnMissionSpawned(CurrentMission);
+    StartMissionTimer();
 
     UE_LOG(LogTemp, Log, TEXT("New Mission Spawned: %s"), *CurrentMission.Description);
+}
+
+void ALibraryTaskManager::StartMissionTimer()
+{
+    if (!GetWorld())
+    {
+        return;
+    }
+
+    ClearMissionTimer();
+    bMissionActive = true;
+    CurrentMissionTimeRemaining = CurrentMission.TimeLimit;
+
+    OnMissionUpdated(CurrentMissionTimeRemaining);
+
+    if (CurrentMissionTimeRemaining <= 0.0f)
+    {
+        return;
+    }
+
+    GetWorld()->GetTimerManager().SetTimer(MissionTimerHandle, this, &ALibraryTaskManager::UpdateMissionTimer, 1.0f, true);
+    GetWorld()->GetTimerManager().SetTimer(MissionTimeoutHandle, this, &ALibraryTaskManager::FailCurrentMission, CurrentMissionTimeRemaining, false);
+}
+
+void ALibraryTaskManager::UpdateMissionTimer()
+{
+    if (!bMissionActive)
+    {
+        return;
+    }
+
+    CurrentMissionTimeRemaining = FMath::Max(0.0f, CurrentMissionTimeRemaining - 1.0f);
+    OnMissionUpdated(CurrentMissionTimeRemaining);
+}
+
+void ALibraryTaskManager::ClearMissionTimer()
+{
+    if (!GetWorld())
+    {
+        CurrentMissionTimeRemaining = 0.0f;
+        return;
+    }
+
+    GetWorld()->GetTimerManager().ClearTimer(MissionTimerHandle);
+    GetWorld()->GetTimerManager().ClearTimer(MissionTimeoutHandle);
+    CurrentMissionTimeRemaining = 0.0f;
 }

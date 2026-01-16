@@ -23,3 +23,9 @@ Players take the role of a librarian managing a chaotic library. You must organi
 3. Compile the project in your IDE.
 4. Open the Editor and create Blueprints based on the provided C++ classes.
 5. Reference the `walkthrough.md` for specific Blueprint logic implementation.
+
+## Testing
+- Follow the manual PIE checklist in `CLOUD.md`.
+
+## Art Direction
+- See `asset_style_guide.md` for the chibi cartoon 2.5D side-view style guide.
