@@ -2,9 +2,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Engine/EngineTypes.h"
 #include "BookTypes.h"
 #include "BookInterface.h"
 #include "LibraryBook.generated.h"
+
+class UPrimitiveComponent;
+class USoundBase;
+class UStaticMeshComponent;
 
 UCLASS()
 class ALibraryBook : public AActor, public IBookInterface
@@ -21,6 +26,9 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
     UStaticMeshComponent* BookMesh;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+    USoundBase* CollisionSound;
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Book Data")
     FBookData BookData;
 
@@ -31,4 +39,7 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Book")
     void SetHighlight(bool bEnabled);
+
+    UFUNCTION()
+    void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 };
