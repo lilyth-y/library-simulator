@@ -21,6 +21,12 @@ This document provides a technical overview of the C++ classes and systems imple
 ## AI Control
 - **[PatronAIController.h](Source/LibrarySimulator/PatronAIController.h)**: Integration point for UE5 Behavior Trees to drive patron patterns.
 
+## Gameplay Systems
+- **[LibraryNoiseManager.h](Source/LibrarySimulator/LibraryNoiseManager.h)**: Tracks ambient noise level, decay, and threshold events.
+- **[LibraryTrashManager.h](Source/LibrarySimulator/LibraryTrashManager.h)**: Spawns/cleans trash instances and exposes BP events.
+- **[LibraryLoanManager.h](Source/LibrarySimulator/LibraryLoanManager.h)**: Tracks borrowing, due time, and overdue status.
+- **[LibraryMagicManager.h](Source/LibrarySimulator/LibraryMagicManager.h)**: Locates books and triggers magic-driven movement/auto-shelving.
+
 ## Logic Flows
 Refer to the **[walkthrough.md](walkthrough.md)** for detailed mermaid diagrams and Blueprint setup guides for:
 - Physics-based carrying.

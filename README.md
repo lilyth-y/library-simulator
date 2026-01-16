@@ -11,6 +11,9 @@ Players take the role of a librarian managing a chaotic library. You must organi
 - **Patron AI**: Antagonistic NPC patterns that disrupt library order.
 - **Mission System**: Time-based tasks and a "Buried in Books" failure condition.
 - **Library PC**: Integrated searchable database for book metadata and categorization.
+- **Noise/Trash Systems**: Ambient noise and mess generation for atmosphere and penalties.
+- **Loans & Overdue**: Borrowing flow with due times and overdue tracking.
+- **Magic Utilities**: Book locating and auto-shelving hooks for fantasy flair.
 
 ## Tech Stack
 - **Engine**: Unreal Engine 5.1+

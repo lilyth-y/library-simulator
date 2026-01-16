@@ -13,6 +13,10 @@
 - Task Manager: BP derived from `ALibraryTaskManager`.
 - Library PC: BP derived from `ALibraryPC`.
 - Patron: BP derived from `ALibraryPatron` + `APatronAIController`.
+- Noise Manager: BP derived from `ALibraryNoiseManager`.
+- Trash Manager: BP derived from `ALibraryTrashManager`.
+- Loan Manager: BP derived from `ALibraryLoanManager`.
+- Magic Manager: BP derived from `ALibraryMagicManager`.
 
 ## Scenarios
 1) Book pickup and release
@@ -39,3 +43,15 @@
 
 7) Patron shush
 - Trigger Shush and confirm patron state/behavior update.
+
+8) Noise & trash
+- Trigger book collision and patron noise, confirm noise events fire.
+- Trigger crumbs spawning and confirm trash events fire.
+
+9) Loans & overdue
+- Borrow a book with a short loan duration.
+- Confirm overdue event fires after due time.
+
+10) Magic helpers
+- Locate a book by barcode or title.
+- Trigger levitate/auto-shelf events and confirm FX hooks fire.
