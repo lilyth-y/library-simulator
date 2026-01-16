@@ -1,5 +1,6 @@
 #include "LibraryBook.h"
 #include "Kismet/GameplayStatics.h"
+#include "LibraryNoiseManager.h"
 
 ALibraryBook::ALibraryBook()
 {
@@ -29,14 +30,28 @@ void ALibraryBook::BeginPlay()
 
 void ALibraryBook::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-    if (!CollisionSound) return;
+    const float ImpactForce = NormalImpulse.Size();
 
-    // Logic: Volume based on impact magnitude
-    float ImpactForce = NormalImpulse.Size();
-    if (ImpactForce > 1000.0f) // Minimal threshold
+    if (CollisionSound && ImpactForce > 1000.0f)
     {
-        float VolumeMultiplier = FMath::Clamp(ImpactForce / 10000.0f, 0.1f, 1.0f);
+        const float VolumeMultiplier = FMath::Clamp(ImpactForce / 10000.0f, 0.1f, 1.0f);
         UGameplayStatics::PlaySoundAtLocation(this, CollisionSound, GetActorLocation(), VolumeMultiplier);
+    }
+
+    if (ImpactForce > 0.0f)
+    {
+        OnBookImpact(ImpactForce, GetActorLocation());
+    }
+
+    TArray<AActor*> NoiseManagers;
+    UGameplayStatics::GetAllActorsOfClass(this, ALibraryNoiseManager::StaticClass(), NoiseManagers);
+    if (NoiseManagers.Num() > 0)
+    {
+        if (ALibraryNoiseManager* NoiseManager = Cast<ALibraryNoiseManager>(NoiseManagers[0]))
+        {
+            const float NoiseAmount = FMath::Clamp(ImpactForce / 5000.0f, 0.1f, 2.0f);
+            NoiseManager->ReportNoise(NoiseAmount, GetActorLocation());
+        }
     }
 }
 
@@ -44,6 +59,8 @@ void ALibraryBook::Pickup_Implementation()
 {
     // Logic to attach to character
     BookMesh->SetSimulatePhysics(false);
+    BookData.bIsBeingRelocated = true;
+    BookData.bIsBeingCarried = true;
 }
 
 void ALibraryBook::CheckStatus_Implementation()

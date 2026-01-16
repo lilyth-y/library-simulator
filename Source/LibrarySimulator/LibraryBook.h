@@ -40,6 +40,9 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Book")
     void SetHighlight(bool bEnabled);
 
+    UFUNCTION(BlueprintImplementableEvent, Category = "Book")
+    void OnBookImpact(float ImpactForce, FVector ImpactLocation);
+
     UFUNCTION()
     void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 };
