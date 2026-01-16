@@ -25,6 +25,9 @@ public:
     UFUNCTION(BlueprintImplementableEvent, Category = "LibraryPC")
     void UpdateDisplay(const FBookData& Data);
 
+    UFUNCTION(BlueprintImplementableEvent, Category = "LibraryPC")
+    void OnSearchFailed(const FString& Query);
+
 protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Database")
     TArray<FBookData> LibraryDatabase;

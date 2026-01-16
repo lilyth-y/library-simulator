@@ -4,6 +4,7 @@
 1. Place this repository inside your UE5 project's `Source` directory.
 2. Regenerate project files and build.
 3. Create Blueprint subclasses for key C++ classes.
+4. Add input actions `Interact` and `Shush` in Project Settings > Input.
 
 ## Required Actors in Test Map
 - Player: BP derived from `ALibraryCharacter`.

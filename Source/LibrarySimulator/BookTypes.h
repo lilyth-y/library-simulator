@@ -37,6 +37,9 @@ struct FBookData
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Book")
     bool bIsBeingRelocated;
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Book")
+    bool bIsBeingCarried;
+
     FBookData()
         : Title("Unknown")
         , CategoryID(0.0f)
@@ -45,5 +48,6 @@ struct FBookData
         , Barcode(-1)
         , DesignatedShelfID(-1)
         , bIsBeingRelocated(false)
+        , bIsBeingCarried(false)
     {}
 };

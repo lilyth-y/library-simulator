@@ -106,6 +106,11 @@ void ALibraryTaskManager::TriggerGameOver()
             // The heavy lifting is done by the Radial Impulse below.
         }
 
+        if (BookExplosionFX)
+        {
+            UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BookExplosionFX, PlayerChar->GetActorLocation());
+        }
+
         // 3. Physics Explosion on existing books
         TArray<AActor*> AllBooks;
         UGameplayStatics::GetAllActorsOfClass(this, ALibraryBook::StaticClass(), AllBooks);
@@ -160,6 +165,7 @@ void ALibraryTaskManager::StartMissionTimer()
 
     if (CurrentMissionTimeRemaining <= 0.0f)
     {
+        FailCurrentMission();
         return;
     }
 

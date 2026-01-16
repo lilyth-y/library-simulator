@@ -20,10 +20,13 @@ protected:
 
 public:    
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stability")
-    float HeightThreshold;
+    float HeightThreshold; // Max stack height in cm
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stability")
     float StabilityThreshold;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stability")
+    float StabilityCheckIntervalSeconds;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stability")
     float CollapseCooldownSeconds;
@@ -41,4 +44,5 @@ private:
     TArray<AActor*> GetStackedBooks();
 
     float LastCollapseTimeSeconds;
+    float LastStabilityCheckTimeSeconds;
 };

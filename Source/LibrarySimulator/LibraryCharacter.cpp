@@ -52,6 +52,7 @@ void ALibraryCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
     PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ALibraryCharacter::Interact);
+    PlayerInputComponent->BindAction("Shush", IE_Pressed, this, &ALibraryCharacter::ShushPatron);
 }
 
 void ALibraryCharacter::Interact()
@@ -74,6 +75,7 @@ void ALibraryCharacter::PickupBook(ALibraryBook* Book)
 
     CarriedBook = Book;
     CarriedBook->BookData.bIsBeingRelocated = true;
+    CarriedBook->BookData.bIsBeingCarried = true;
 
     // Best Practice: Soft handling for smooth carrying
     PhysicsHandle->LinearDamping = 200.0f;
@@ -99,6 +101,7 @@ void ALibraryCharacter::ReleaseBook()
 
     PhysicsHandle->ReleaseComponent();
     CarriedBook->BookMesh->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
+    CarriedBook->BookData.bIsBeingCarried = false;
     CarriedBook = nullptr;
 }
 

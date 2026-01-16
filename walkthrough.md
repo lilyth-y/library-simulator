@@ -35,7 +35,7 @@ graph TD
 ```
 <!-- slide -->
 ### Stability Variables
-- **HeightThreshold**: Maximum number of books before the stack becomes unstable.
+- **HeightThreshold**: Maximum stack height in CM before the stack becomes unstable.
 - **StabilityThreshold**: Max horizontal distance (CM) from the base book's center before falling.
 ````
 

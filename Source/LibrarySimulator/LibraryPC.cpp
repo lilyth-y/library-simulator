@@ -10,6 +10,7 @@ bool ALibraryPC::SearchBook(FString Title, FBookData& OutData)
     const FString Query = Title.TrimStartAndEnd();
     if (Query.IsEmpty())
     {
+        OnSearchFailed(Query);
         return false;
     }
 
@@ -32,6 +33,7 @@ bool ALibraryPC::SearchBook(FString Title, FBookData& OutData)
             return true;
         }
     }
+    OnSearchFailed(Query);
     return false;
 }
 
