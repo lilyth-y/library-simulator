@@ -36,6 +36,7 @@ void ALibraryShelf::OnBookPlaced(UPrimitiveComponent* OverlappedComp, AActor* Ot
     if (bMatch)
     {
         UE_LOG(LogTemp, Log, TEXT("SCORE! Book %s placed correctly on Shelf %d."), *Book->BookData.Title, ShelfCategoryID);
+        Book->BookData.bIsBeingRelocated = false;
         // TODO: Add to Global Score Manager
     }
     else
@@ -43,4 +44,6 @@ void ALibraryShelf::OnBookPlaced(UPrimitiveComponent* OverlappedComp, AActor* Ot
         UE_LOG(LogTemp, Warning, TEXT("WRONG SHELF! Book %s (%d) does not belong on Shelf %d."), *Book->BookData.Title, BookCat, ShelfCategoryID);
         // TODO: Play Error Sound / Decrease Reputation
     }
+
+    OnShelfPlacementEvaluated(Book, bMatch);
 }

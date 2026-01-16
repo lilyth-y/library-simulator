@@ -4,6 +4,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "LibraryBook.h"
+#include "LibraryPatron.h"
+#include "PatronAIController.h"
 
 ALibraryCharacter::ALibraryCharacter()
 {
@@ -100,7 +102,26 @@ void ALibraryCharacter::ReleaseBook()
 
 void ALibraryCharacter::ShushPatron()
 {
-    // Logic to trace for patron and call their OnShushed interface/function
+    FVector Start = GetActorLocation();
+    FVector End = Start + (GetActorForwardVector() * 250.0f);
+    FHitResult HitResult;
+    FCollisionQueryParams Params;
+    Params.AddIgnoredActor(this);
+
+    if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params))
+    {
+        ALibraryPatron* Patron = Cast<ALibraryPatron>(HitResult.GetActor());
+        if (Patron)
+        {
+            Patron->ChangeState(EPatronState::Alerted);
+            Patron->OnShushed();
+
+            if (APatronAIController* PatronController = Cast<APatronAIController>(Patron->GetController()))
+            {
+                PatronController->ForceDesist();
+            }
+        }
+    }
 }
 
 void ALibraryCharacter::TraceForInteractable()

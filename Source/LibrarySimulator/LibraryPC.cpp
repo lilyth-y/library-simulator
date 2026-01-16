@@ -12,6 +12,7 @@ bool ALibraryPC::SearchBook(FString Title, FBookData& OutData)
         if (Book.Title.Equals(Title, ESearchCase::IgnoreCase))
         {
             OutData = Book;
+            UpdateDisplay(OutData);
             return true; 
         }
     }
@@ -20,13 +21,9 @@ bool ALibraryPC::SearchBook(FString Title, FBookData& OutData)
 
 bool ALibraryPC::ValidateBarcodeInput(int32 InputCode, const FBookData& TargetBook)
 {
-    // In a real system, we might check a hidden ID.
-    // For now, let's assume valid if input matches a hash or simple check.
-    // Simplifying: Check if InputCode matches (int)CategoryID * 10 or similar logic
-    // But better: Just check against a known 'Correct' code if we had it.
-    
-    // Placeholder logic:
-    bool bSuccess = (InputCode > 0); 
+    const int32 ExpectedCode = FMath::RoundToInt(TargetBook.CategoryID * 10.0f);
+    const bool bHasExpectedCode = ExpectedCode > 0;
+    const bool bSuccess = bHasExpectedCode ? (InputCode == ExpectedCode) : (InputCode > 0);
     
     if (bSuccess)
     {

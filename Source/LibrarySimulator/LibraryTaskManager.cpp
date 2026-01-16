@@ -36,6 +36,17 @@ void ALibraryTaskManager::AddBookToQueue()
     }
 }
 
+void ALibraryTaskManager::RemoveBookFromQueue()
+{
+    if (CurrentReturnQueueSize <= 0)
+    {
+        CurrentReturnQueueSize = 0;
+        return;
+    }
+
+    CurrentReturnQueueSize--;
+}
+
 void ALibraryTaskManager::TriggerGameOver()
 {
     UE_LOG(LogTemp, Warning, TEXT("GAME OVER: Buried in Books!"));
@@ -81,6 +92,15 @@ void ALibraryTaskManager::TriggerGameOver()
 
 void ALibraryTaskManager::SpawnRandomMission()
 {
-    // Logic to spawn a mission struct and notify player
-    UE_LOG(LogTemp, Log, TEXT("New Mission Spawned"));
+    if (MissionPool.Num() == 0)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("MissionPool is empty. No mission spawned."));
+        return;
+    }
+
+    const int32 MissionIndex = FMath::RandRange(0, MissionPool.Num() - 1);
+    CurrentMission = MissionPool[MissionIndex];
+    OnMissionSpawned(CurrentMission);
+
+    UE_LOG(LogTemp, Log, TEXT("New Mission Spawned: %s"), *CurrentMission.Description);
 }

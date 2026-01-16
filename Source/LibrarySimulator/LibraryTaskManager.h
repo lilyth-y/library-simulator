@@ -36,6 +36,12 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tasks")
     int32 CurrentReturnQueueSize;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tasks")
+    TArray<FMissionData> MissionPool;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tasks")
+    FMissionData CurrentMission;
+
     UFUNCTION(BlueprintCallable, Category = "GameLoop")
     void TriggerGameOver();
 
@@ -54,6 +60,12 @@ public:
 
     UFUNCTION(BlueprintCallable, Category = "Tasks")
     void AddBookToQueue();
+
+    UFUNCTION(BlueprintCallable, Category = "Tasks")
+    void RemoveBookFromQueue();
+
+    UFUNCTION(BlueprintImplementableEvent, Category = "Tasks")
+    void OnMissionSpawned(const FMissionData& Mission);
 
     UFUNCTION(BlueprintImplementableEvent, Category = "Tasks")
     void OnGameOver();

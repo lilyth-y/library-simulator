@@ -5,6 +5,8 @@
 #include "Components/BoxComponent.h"
 #include "LibraryShelf.generated.h"
 
+class ALibraryBook;
+
 UCLASS()
 class ALibraryShelf : public AActor
 {
@@ -28,6 +30,9 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Categorization")
     int32 CategoryRange; // e.g., 100 range covers 100-199
+
+    UFUNCTION(BlueprintImplementableEvent, Category = "Categorization")
+    void OnShelfPlacementEvaluated(ALibraryBook* Book, bool bCorrectShelf);
 
     UFUNCTION()
     void OnBookPlaced(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
