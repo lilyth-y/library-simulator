@@ -27,6 +27,9 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Inventory")
     ALibraryBook* CarriedBook;
 
+    UFUNCTION(BlueprintCallable, Category = "Inventory")
+    ALibraryBook* GetCarriedBook() const { return CarriedBook; }
+
     UFUNCTION(BlueprintCallable, Category = "Action")
     void Interact();
 

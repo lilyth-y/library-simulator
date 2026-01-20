@@ -7,6 +7,10 @@ UStackStabilityComponent::UStackStabilityComponent()
     PrimaryComponentTick.bCanEverTick = true;
     HeightThreshold = 100.0f; 
     StabilityThreshold = 10.0f; // CM deviation allowed
+    StabilityCheckIntervalSeconds = 0.1f;
+    CollapseCooldownSeconds = 1.0f;
+    LastCollapseTimeSeconds = -100000.0f;
+    LastStabilityCheckTimeSeconds = -100000.0f;
 }
 
 void UStackStabilityComponent::BeginPlay()
@@ -17,6 +21,12 @@ void UStackStabilityComponent::BeginPlay()
 void UStackStabilityComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
     Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+    const float CurrentTimeSeconds = GetWorld() ? GetWorld()->GetTimeSeconds() : 0.0f;
+    if (StabilityCheckIntervalSeconds > 0.0f && CurrentTimeSeconds - LastStabilityCheckTimeSeconds < StabilityCheckIntervalSeconds)
+    {
+        return;
+    }
+    LastStabilityCheckTimeSeconds = CurrentTimeSeconds;
     CheckStability();
 }
 
@@ -24,6 +34,13 @@ void UStackStabilityComponent::CheckStability()
 {
     if (!IsStackStable())
     {
+        const float CurrentTimeSeconds = GetWorld() ? GetWorld()->GetTimeSeconds() : 0.0f;
+        if (CurrentTimeSeconds - LastCollapseTimeSeconds < CollapseCooldownSeconds)
+        {
+            return;
+        }
+        LastCollapseTimeSeconds = CurrentTimeSeconds;
+
         OnStackCollapse.Broadcast();
         
         // Add physics impulse to simulate collapse
@@ -39,9 +56,8 @@ void UStackStabilityComponent::CheckStability()
     }
 }
 
-float UStackStabilityComponent::CalculateStackCenterOfMass(FVector& OutCoM)
+float UStackStabilityComponent::CalculateStackCenterOfMass(const TArray<AActor*>& Stack, FVector& OutCoM)
 {
-    TArray<AActor*> Stack = GetStackedBooks();
     if (Stack.Num() == 0) return 0.0f;
 
     FVector TotalWeightedLoc = FVector::ZeroVector;
@@ -66,10 +82,35 @@ float UStackStabilityComponent::CalculateStackCenterOfMass(FVector& OutCoM)
 
 bool UStackStabilityComponent::IsStackStable()
 {
-    FVector CoM;
-    float TotalWeight = CalculateStackCenterOfMass(CoM);
+    TArray<AActor*> Stack = GetStackedBooks();
+    if (Stack.Num() == 0) return true; // Empty stack is stable
 
-    if (TotalWeight == 0.0f) return true; // Empty stack is stable
+    FVector CoM;
+    float TotalWeight = CalculateStackCenterOfMass(Stack, CoM);
+    if (TotalWeight == 0.0f) return true;
+
+    float MaxTopZ = GetOwner() ? GetOwner()->GetActorLocation().Z : 0.0f;
+    for (AActor* Actor : Stack)
+    {
+        if (!Actor)
+        {
+            continue;
+        }
+
+        FVector Origin;
+        FVector BoxExtent;
+        Actor->GetActorBounds(false, Origin, BoxExtent);
+        MaxTopZ = FMath::Max(MaxTopZ, Origin.Z + BoxExtent.Z);
+    }
+
+    if (HeightThreshold > 0.0f && GetOwner())
+    {
+        const float StackHeight = MaxTopZ - GetOwner()->GetActorLocation().Z;
+        if (StackHeight > HeightThreshold)
+        {
+            return false;
+        }
+    }
 
     // Project CoM found to XY plane relative to Base
     FVector BaseLoc = GetOwner()->GetActorLocation();
@@ -84,7 +125,22 @@ TArray<AActor*> UStackStabilityComponent::GetStackedBooks()
     
     // Logic: Get Overlapping Actors of Class ALibraryBook
     // Filter recursively upwards? For now, just get immediate overlaps logic placeholder
-    GetOwner()->GetOverlappingActors(StackedBooks, ALibraryBook::StaticClass());
+    TArray<AActor*> OverlappingBooks;
+    GetOwner()->GetOverlappingActors(OverlappingBooks, ALibraryBook::StaticClass());
+
+    for (AActor* Actor : OverlappingBooks)
+    {
+        if (!Actor)
+        {
+            continue;
+        }
+
+        UPrimitiveComponent* PrimComp = Cast<UPrimitiveComponent>(Actor->GetRootComponent());
+        if (PrimComp && PrimComp->IsSimulatingPhysics())
+        {
+            StackedBooks.Add(Actor);
+        }
+    }
     
     return StackedBooks;
 }

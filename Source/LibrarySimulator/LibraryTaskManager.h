@@ -36,6 +36,21 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tasks")
     int32 CurrentReturnQueueSize;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tasks")
+    float MissionIntervalSeconds;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tasks")
+    TArray<FMissionData> MissionPool;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tasks")
+    FMissionData CurrentMission;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tasks")
+    bool bMissionActive;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tasks")
+    float CurrentMissionTimeRemaining;
+
     UFUNCTION(BlueprintCallable, Category = "GameLoop")
     void TriggerGameOver();
 
@@ -55,10 +70,36 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Tasks")
     void AddBookToQueue();
 
+    UFUNCTION(BlueprintCallable, Category = "Tasks")
+    void RemoveBookFromQueue();
+
+    UFUNCTION(BlueprintCallable, Category = "Tasks")
+    void CompleteCurrentMission();
+
+    UFUNCTION(BlueprintCallable, Category = "Tasks")
+    void FailCurrentMission();
+
+    UFUNCTION(BlueprintImplementableEvent, Category = "Tasks")
+    void OnMissionSpawned(const FMissionData& Mission);
+
+    UFUNCTION(BlueprintImplementableEvent, Category = "Tasks")
+    void OnMissionUpdated(float TimeRemaining);
+
+    UFUNCTION(BlueprintImplementableEvent, Category = "Tasks")
+    void OnMissionCompleted(const FMissionData& Mission);
+
+    UFUNCTION(BlueprintImplementableEvent, Category = "Tasks")
+    void OnMissionFailed(const FMissionData& Mission);
+
     UFUNCTION(BlueprintImplementableEvent, Category = "Tasks")
     void OnGameOver();
 
 private:
     FTimerHandle MissionSpawnTimer;
+    FTimerHandle MissionTimerHandle;
+    FTimerHandle MissionTimeoutHandle;
     void SpawnRandomMission();
+    void StartMissionTimer();
+    void UpdateMissionTimer();
+    void ClearMissionTimer();
 };

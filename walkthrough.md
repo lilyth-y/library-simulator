@@ -35,7 +35,7 @@ graph TD
 ```
 <!-- slide -->
 ### Stability Variables
-- **HeightThreshold**: Maximum number of books before the stack becomes unstable.
+- **HeightThreshold**: Maximum stack height in CM before the stack becomes unstable.
 - **StabilityThreshold**: Max horizontal distance (CM) from the base book's center before falling.
 ````
 
@@ -92,3 +92,21 @@ graph LR
 1. **Disorganize**: The AI finds a book with `bIsBeingRelocated = false`, sets it to `true`, and moves it to a shelf with a different `CategoryID`.
 2. **Noise**: Every 30 seconds, a "Rude" Patron has a 20% chance to play a loud audio clip. If the player doesn't "Shush" them within 10 seconds, the "Mission Manager" adds a penalty.
 ````
+
+## 6. Additional Gameplay Systems
+
+### Noise Manager
+- **ReportNoise**: Called by books and patrons to raise noise levels.
+- **OnNoiseThresholdReached**: Hook a warning UI or alert logic.
+
+### Trash Manager
+- **SpawnTrash**: Triggered by "Secret Eater" patrons to leave crumbs.
+- **OnTrashExpired/Cleaned**: Hook cleanup tasks or penalties.
+
+### Loan & Overdue
+- **BorrowBook**: Adds a loan record with due time.
+- **OnLoanOverdue**: Trigger overdue penalties or missions.
+
+### Magic Utilities
+- **LocateBook**: Returns book location for UI indicators.
+- **Levitate/AutoShelf**: Trigger FX-driven auto movement in BP.

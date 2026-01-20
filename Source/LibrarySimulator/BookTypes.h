@@ -29,12 +29,25 @@ struct FBookData
     float StackWeight;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Book")
+    int32 Barcode;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Book")
     int32 DesignatedShelfID;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Book")
     bool bIsBeingRelocated;
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Book")
+    bool bIsBeingCarried;
+
     FBookData()
-        : Title("Unknown"), CategoryID(0.0f), Status(EBookStatus::Normal), StackWeight(1.0f), DesignatedShelfID(-1), bIsBeingRelocated(false)
+        : Title("Unknown")
+        , CategoryID(0.0f)
+        , Status(EBookStatus::Normal)
+        , StackWeight(1.0f)
+        , Barcode(-1)
+        , DesignatedShelfID(-1)
+        , bIsBeingRelocated(false)
+        , bIsBeingCarried(false)
     {}
 };
