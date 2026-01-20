@@ -55,6 +55,27 @@
 - difficultyTierMax: int (기본 7)
 - challengeMode: bool (기본 false)
 
+### 1.7 StaffData
+- id: string
+- role: enum { Organizer, Reception, Repair }
+- hireCost: int
+- dailyUpkeep: int
+- efficiency: float (작업 속도 보정)
+- isUnlocked: bool
+
+### 1.8 FacilityData
+- id: string
+- type: enum { BookTruck, SearchDesk, ReturnBox, RepairDesk, FloorExpansion }
+- level: int
+- unlockCost: int
+- unlockRequirement: string (평판/일수 조건)
+- effectDesc: string
+
+### 1.9 BuildingState
+- floorCount: int
+- unlockedFacilities: List<FacilityId>
+- hiredStaff: List<StaffId>
+
 ---
 
 ## 2) 상호작용 시스템
@@ -220,32 +241,50 @@
 
 ---
 
-## 10) 도서관 PC
+## 10) 업그레이드/해금 시스템
 
-### 10.1 검색
+### 10.1 해금 흐름
+- 하루 정산 화면에서 코인/평판으로 해금
+- 해금 선택은 하루에 1개 제한(초기 기준)
+
+### 10.2 직원 해금
+- Organizer: 주변 책 자동 정리(속도 느림)
+- Reception: 손님 문의 처리(업무 1개 자동 완료)
+- Repair: 손상 책 수리 보조(수리 시간 감소)
+
+### 10.3 시설 해금
+- BookTruck: 한 번에 3~5권 운반, 이동 속도 약간 감소
+- SearchDesk: 책 위치 안내/선반 강조 기능 강화
+- FloorExpansion: 층 수 증가, 수용량 증가, 업무량도 증가
+
+---
+
+## 11) 도서관 PC
+
+### 11.1 검색
 - 제목/카테고리 검색
 - 결과 클릭 시 안내 표시(해당 선반 강조)
 
-### 10.2 라벨 재발급
+### 11.2 라벨 재발급
 - 상태가 DamagedLabel일 때만 가능
 - 재발급 시 코인 소모
 
 ---
 
-## 11) 저장/로드
+## 12) 저장/로드
 
-### 11.1 저장 항목
+### 12.1 저장 항목
 - 돈, 평판, 시설 레벨
 - 각 책의 상태 및 위치(선반/임시 스택)
 - 당일 진행 상태
 
-### 11.2 저장 방식
+### 12.2 저장 방식
 - 모바일: PlayerPrefs + JSON 파일
 - PC: 로컬 JSON 파일
 
 ---
 
-## 12) 수용 기준(예시)
+## 13) 수용 기준(예시)
 - 책 집기/놓기가 60fps 환경에서 부드럽게 동작
 - 서가 붕괴가 1초 내 시각적 피드백 제공
 - PC/모바일 모두 동일한 업무 루프 체험 가능
