@@ -52,6 +52,8 @@
 - suddenRushBonusPerTier: float (기본 0.05)
 - intervalScaleMin: float (기본 0.75)
 - suddenRushChanceMax: float (기본 0.60)
+- difficultyTierMax: int (기본 7)
+- challengeMode: bool (기본 false)
 
 ---
 
@@ -178,7 +180,9 @@
 ## 8) 난이도 스케일링
 
 ### 8.1 난이도 단계
-- difficultyTier = floor((dayIndex - 1) / tierStepDays) + 1
+- difficultyTierBase = floor((dayIndex - 1) / tierStepDays) + 1
+- 기본 모드: difficultyTier = min(difficultyTierBase, difficultyTierMax)
+- 도전 모드: difficultyTier = difficultyTierBase (상한 없음)
 
 ### 8.2 스케일링 규칙(매운맛 A)
 - difficultyIntervalScale = max(intervalScaleMin, intervalScalePerTier^(tier-1))
