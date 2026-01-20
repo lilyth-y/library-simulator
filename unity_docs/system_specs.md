@@ -76,6 +76,23 @@
 - unlockedFacilities: List<FacilityId>
 - hiredStaff: List<StaffId>
 
+### 1.10 AchievementData
+- id: string
+- title: string
+- description: string
+- isHidden: bool
+- conditionTag: string
+- rewardType: enum { None, Cosmetic, Coins }
+- rewardValue: int
+
+### 1.11 HiddenElementData
+- id: string
+- type: enum { RarePatron, SecretBook, HiddenShelf, LoreNote }
+- discoverHint: string
+- spawnChance: float
+- conditions: string
+- isDiscovered: bool
+
 ---
 
 ## 2) 상호작용 시스템
@@ -257,34 +274,64 @@
 - SearchDesk: 책 위치 안내/선반 강조 기능 강화
 - FloorExpansion: 층 수 증가, 수용량 증가, 업무량도 증가
 
+### 10.4 해금 트리(예시)
+| 단계 | 해금 요소 | 비용(코인) | 조건 | 효과 |
+| --- | --- | --- | --- | --- |
+| 1 | BookTruck | 120 | Day 2 또는 평판 8 | 운반 +3권, 이동 -5% |
+| 2 | SearchDesk | 180 | Day 3 또는 평판 12 | 검색 힌트 강화 |
+| 3 | Organizer | 250 | Day 4 또는 평판 18 | 자동 정리 보조 |
+| 4 | ReturnBox Lv1 | 220 | Day 5 또는 평판 22 | 반납 큐 +2 |
+| 5 | RepairDesk | 260 | Day 6 또는 평판 26 | 수리 시간 -20% |
+| 6 | FloorExpansion | 350 | Day 7 또는 평판 32 | 2층 개방 |
+| 7 | Reception | 320 | Day 9 또는 평판 40 | 문의 1건 자동 처리 |
+
+### 10.5 밸런싱 메모
+- 비용/조건은 초기 가이드이며 플레이 테스트로 조정
+- 해금은 하루 1개 제한을 유지
+
 ---
 
-## 11) 도서관 PC
+## 11) 업적/숨김 요소
 
-### 11.1 검색
+### 11.1 업적
+- 조건 태그 기반으로 트리거
+- 달성 시 작은 토스트 + 코스메틱 또는 코인 보상
+- 히든 업적은 실루엣만 표시
+
+### 11.2 숨김 요소
+- 희귀 손님/비밀 장서/숨겨진 서가/일기장 수집
+- 발생 확률은 비공개, 힌트만 제공
+- 발견 시 컬렉션에 기록, 다음 발견 확률 소폭 감소
+
+---
+
+## 12) 도서관 PC
+
+### 12.1 검색
 - 제목/카테고리 검색
 - 결과 클릭 시 안내 표시(해당 선반 강조)
 
-### 11.2 라벨 재발급
+### 12.2 라벨 재발급
 - 상태가 DamagedLabel일 때만 가능
 - 재발급 시 코인 소모
 
 ---
 
-## 12) 저장/로드
+## 13) 저장/로드
 
-### 12.1 저장 항목
+### 13.1 저장 항목
 - 돈, 평판, 시설 레벨
 - 각 책의 상태 및 위치(선반/임시 스택)
 - 당일 진행 상태
+- 업적 해금 상태, 숨김 요소 발견 상태
 
-### 12.2 저장 방식
+### 13.2 저장 방식
 - 모바일: PlayerPrefs + JSON 파일
 - PC: 로컬 JSON 파일
 
 ---
 
-## 13) 수용 기준(예시)
+## 14) 수용 기준(예시)
 - 책 집기/놓기가 60fps 환경에서 부드럽게 동작
 - 서가 붕괴가 1초 내 시각적 피드백 제공
 - PC/모바일 모두 동일한 업무 루프 체험 가능
