@@ -43,6 +43,16 @@
 - activeEvent: enum { None, SuddenRush, ShelfCollapse, PatronRiot, QueueOverflow }
 - eventCooldownSeconds: float
 
+### 1.6 DifficultyConfig
+- dayIndex: int
+- difficultyTier: int
+- tierStepDays: int (기본 3)
+- intervalScalePerTier: float (기본 0.95)
+- misbehaviorBonusPerTier: float (기본 0.05)
+- suddenRushBonusPerTier: float (기본 0.05)
+- intervalScaleMin: float (기본 0.75)
+- suddenRushChanceMax: float (기본 0.60)
+
 ---
 
 ## 2) 상호작용 시스템
@@ -152,11 +162,12 @@
 - SuddenRush: 15~25초 간격
 - WrapUp: 신규 생성 중단
 - 1일 업무 수 목표: 5~7개
+- 실제 간격 = 기준 간격 * difficultyIntervalScale
 
 ### 7.4 사건 예산
 - 대형 사건: 1회/일 (Rush 구간에 배치)
 - 돌발 러시(SuddenRush): 0~1회/일
-  - 발생 확률: 35%/일
+  - 발생 확률: 35%/일 + (tier-1) * 5% (최대 60%)
   - 조건: chaos >= 50
 - 소형 사건: 혼잡도 높을 때 1~2회
 - 연쇄 사건: chaos >= 85, 15% 확률, 하루 최대 1회
@@ -164,44 +175,61 @@
 
 ---
 
-## 8) 업무/퀘스트 시스템
+## 8) 난이도 스케일링
 
-### 8.1 생성 규칙
+### 8.1 난이도 단계
+- difficultyTier = floor((dayIndex - 1) / tierStepDays) + 1
+
+### 8.2 스케일링 규칙(매운맛 A)
+- difficultyIntervalScale = max(intervalScaleMin, intervalScalePerTier^(tier-1))
+- 소란/실수 확률 증가 = (tier-1) * misbehaviorBonusPerTier
+- 돌발 러시 확률 증가 = (tier-1) * suddenRushBonusPerTier
+- 상한 적용으로 급격한 난이도 상승 방지
+
+### 8.3 회복 여지 유지
+- 업무/정리 완료 시 chaos 감소 폭 고정(난이도에 영향 없음)
+- 하루 정산 시 chaos 40~60% 리셋
+
+---
+
+## 9) 업무/퀘스트 시스템
+
+### 9.1 생성 규칙
 - 페이즈에 따라 25~60초 간격으로 랜덤 생성
 - 난이도에 따라 보상 증가
 
-### 8.2 실패 조건
+### 9.2 실패 조건
 - 제한 시간 초과
 - 반납 큐 초과(지속 발생 시 게임 오버)
 
 ---
 
-## 9) 도서관 PC
+## 10) 도서관 PC
 
-### 9.1 검색
+### 10.1 검색
 - 제목/카테고리 검색
 - 결과 클릭 시 안내 표시(해당 선반 강조)
 
-### 9.2 라벨 재발급
+### 10.2 라벨 재발급
 - 상태가 DamagedLabel일 때만 가능
 - 재발급 시 코인 소모
 
 ---
 
-## 10) 저장/로드
+## 11) 저장/로드
 
-### 10.1 저장 항목
+### 11.1 저장 항목
 - 돈, 평판, 시설 레벨
 - 각 책의 상태 및 위치(선반/임시 스택)
 - 당일 진행 상태
 
-### 10.2 저장 방식
+### 11.2 저장 방식
 - 모바일: PlayerPrefs + JSON 파일
 - PC: 로컬 JSON 파일
 
 ---
 
-## 11) 수용 기준(예시)
+## 12) 수용 기준(예시)
 - 책 집기/놓기가 60fps 환경에서 부드럽게 동작
 - 서가 붕괴가 1초 내 시각적 피드백 제공
 - PC/모바일 모두 동일한 업무 루프 체험 가능
