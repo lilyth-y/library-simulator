@@ -81,6 +81,8 @@
 - title: string
 - description: string
 - isHidden: bool
+- category: enum { Progress, Skill, Management, Collection, Event, Challenge }
+- tier: enum { Bronze, Silver, Gold }
 - conditionTag: string
 - rewardType: enum { None, Cosmetic, Coins }
 - rewardValue: int
@@ -88,6 +90,7 @@
 ### 1.11 HiddenElementData
 - id: string
 - type: enum { RarePatron, SecretBook, HiddenShelf, LoreNote }
+- rarity: enum { Common, Rare, Epic }
 - discoverHint: string
 - spawnChance: float
 - conditions: string
@@ -297,11 +300,17 @@
 - 조건 태그 기반으로 트리거
 - 달성 시 작은 토스트 + 코스메틱 또는 코인 보상
 - 히든 업적은 실루엣만 표시
+ - 카테고리/티어로 정렬 가능
 
 ### 11.2 숨김 요소
 - 희귀 손님/비밀 장서/숨겨진 서가/일기장 수집
 - 발생 확률은 비공개, 힌트만 제공
 - 발견 시 컬렉션에 기록, 다음 발견 확률 소폭 감소
+
+### 11.3 규모 가이드
+- MVP: 업적 15~20, 숨김 요소 5~8
+- 정식: 업적 40~60 (일반 30~45 + 히든 10~15)
+- 정식: 숨김 요소 12~20 (희귀 손님/비밀 장서/일기장)
 
 ---
 
